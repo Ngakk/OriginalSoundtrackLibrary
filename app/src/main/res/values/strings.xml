@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Original Soundtrack Library</string>
+    <string name="home_title">Home Page</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="highlight_from">by Manabua</string>
+    <string name="highlight_album_title">Megalo Box OST</string>
+    <string name="group1_title">Newest</string>
+    <string name="group2_title">Best Rated</string>
+    <string name="group3_title">Random</string>
+    <string name="title_activity_detailed_view">DetailedView</string>
+    <string name="action_settings">Settings</string>
+    <string name="fav_button">Favorite album</string>
+    <string name="unfav_button">Unfavorite album</string>
+    <string name="title_activity_list">ActivityList</string>
+
+</resources>
