@@ -105,13 +105,13 @@ public class SoundtrackAdapter extends ArrayAdapter<Soundtrack> implements View.
                 Toast.makeText(getContext(), "Place holder de play y pausa", Toast.LENGTH_SHORT).show();
             }
         });
-        if(track.getFileuri() == Uri.EMPTY)
+        if(Uri.parse(track.getFileurl()) == Uri.EMPTY)
             viewHolder.download.setVisibility(View.GONE);
         viewHolder.download.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getContext(), "Should download something", Toast.LENGTH_SHORT).show();
-                holder.requestDownload(track.getFileuri());
+                holder.requestDownload(Uri.parse("http://192.168.1.218:8080/ostlibrary/" + track.getFileurl()));
             }
         });
         return convertView;

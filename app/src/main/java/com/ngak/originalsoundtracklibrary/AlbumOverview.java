@@ -26,7 +26,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AlbumOverview extends Fragment implements DownloadRequester, TrackListHolder{
+public class AlbumOverview extends Fragment implements DownloadRequester, AlbumOverviewDownloader, TrackListHolder{
 
     DataBaseAdapter db;
 
@@ -60,41 +60,47 @@ public class AlbumOverview extends Fragment implements DownloadRequester, TrackL
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        db = new DataBaseAdapter(getActivity());
-        db.open();
-
-        Album album = db.getAlbum(id);
-        tracks = db.getAlbumTracks(id);
-        isFavorited = true;
-        for(int i = 0; i < tracks.size(); i++) {
-            if(!tracks.get(i).favorited)
-                isFavorited = false;
-        }
-
         title = (TextView)view.findViewById(R.id.album_title);
         composer = (TextView)view.findViewById(R.id.album_composer);
         cover = (ImageView)view.findViewById(R.id.album_cover);
         button = (Button)view.findViewById(R.id.favorite_album);
         listView = (ListView)view.findViewById(R.id.list_listView);
 
-        if(!album.imageDownloaded && !album.getCoverurl().equals(""))
-            new Downloader.AsyncLoadAlbumCover(album, this).execute(album.getCoverurl());
+        db = new DataBaseAdapter(getActivity());
+        db.open();
 
-        title.setText(album.getName());
-        composer.setText(album.getComposer());
-        cover.setImageBitmap(album.getCover());
+        if(db.isAlbumOnLocal(id)) {
+            Album album = db.getAlbum(id);
 
-        setButtonFavText();
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddToFavorites();
+            tracks = db.getAlbumTracks(id);
+            isFavorited = true;
+            for (int i = 0; i < tracks.size(); i++) {
+                if (!tracks.get(i).favorited)
+                    isFavorited = false;
             }
-        });
 
-        adapter = new SoundtrackAdapter(tracks, getContext(), this);
-        listView.setAdapter(adapter);
+            if (!album.imageDownloaded && !album.getCoverurl().equals(""))
+                new Downloader.AsyncLoadAlbumCover(album, this).execute(album.getCoverurl());
 
+            title.setText(album.getName());
+            composer.setText(album.getComposer());
+            cover.setImageBitmap(album.getCover());
+
+            setButtonFavText();
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AddToFavorites();
+                }
+            });
+
+            adapter = new SoundtrackAdapter(tracks, getContext(), this);
+            listView.setAdapter(adapter);
+        }
+        else {
+            new Downloader.AsyncAlbum(id, this).execute();
+            new Downloader.AsyncAlbumTracklist(id, this).execute();
+        }
         db.close();
     }
 
@@ -167,5 +173,41 @@ public class AlbumOverview extends Fragment implements DownloadRequester, TrackL
             }
 
         }
+    }
+
+    @Override
+    public void onAsyncOverviewEnd(Album album) {
+
+        if (!album.imageDownloaded && !album.getCoverurl().equals(""))
+            new Downloader.AsyncLoadAlbumCover(album, this).execute(album.getCoverurl());
+
+        title.setText(album.getName());
+        composer.setText(album.getComposer());
+        cover.setImageBitmap(album.getCover());
+
+        setButtonFavText();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddToFavorites();
+            }
+        });
+
+        db.close();
+
+    }
+
+    @Override
+    public void onAsyncTracksEnd(ArrayList<Soundtrack> soundtracks) {
+        tracks = soundtracks;
+        isFavorited = true;
+        for (int i = 0; i < tracks.size(); i++) {
+            if (!tracks.get(i).favorited)
+                isFavorited = false;
+        }
+        adapter = new SoundtrackAdapter(tracks, getContext(), this);
+        listView.setAdapter(adapter);
+        Utilities.setListViewHeightBasedOnChildren(listView);
+        adapter.notifyDataSetChanged();
     }
 }

@@ -31,7 +31,10 @@ public class PageAdapter extends FragmentPagerAdapter {
                         return albumOverview;
                     case 1:
                         if(albumDetails == null)
-                            albumDetails = new AlbumDetails(id);
+                            albumDetails = new AlbumDetails();
+                        Bundle bundle2 = new Bundle();
+                        bundle2.putInt("id", id);
+                        albumDetails.setArguments(bundle2);
                         return albumDetails;
                     default:
                         return null;

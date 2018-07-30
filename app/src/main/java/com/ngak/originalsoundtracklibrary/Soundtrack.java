@@ -9,15 +9,15 @@ public class Soundtrack {
     String name;
     String album;
     ArrayList<String> artists;
-    Uri fileuri;
+    String fileurl;
     boolean favorited;
 
-    public Soundtrack(int id, String name, String album, ArrayList<String> artists, Uri fileuri, boolean isFav) {
+    public Soundtrack(int id, String name, String album, ArrayList<String> artists, String fileurl, boolean isFav) {
         this.id = id;
         this.name = name;
         this.album = album;
         this.artists = artists;
-        this.fileuri = fileuri;
+        this.fileurl = fileurl;
         this.favorited = isFav;
     }
 
@@ -41,7 +41,7 @@ public class Soundtrack {
         return artists;
     }
 
-    public Uri getFileuri() {
-        return fileuri;
+    public String getFileurl() {
+        return fileurl;
     }
 }

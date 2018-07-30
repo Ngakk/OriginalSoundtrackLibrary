@@ -1,28 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp">
     <ImageView
         android:id="@+id/album_min_cover"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginLeft="2dp"/>
+
     <TextView
         android:id="@+id/album_min_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/album_min_cover"
-        android:textAppearance="@style/group_item_title"/>
+        android:textAppearance="@style/group_item_title"
+        tools:text="title" />
+
     <TextView
         android:id="@+id/album_min_source"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/album_min_title"
-        android:textAppearance="@style/group_item_subtitle"/>
+        android:textAppearance="@style/group_item_subtitle"
+        tools:text="source" />
+
     <TextView
         android:id="@+id/album_min_composer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/album_min_source"
-        android:textAppearance="@style/group_item_subtitle"/>
+        android:textAppearance="@style/group_item_subtitle"
+        tools:text="composer" />
 </RelativeLayout>

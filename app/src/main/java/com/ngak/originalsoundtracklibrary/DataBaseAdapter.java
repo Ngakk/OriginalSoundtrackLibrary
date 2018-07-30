@@ -152,24 +152,38 @@ public class DataBaseAdapter
 
     public Album getAlbum(int id){
 
-        String sql = "SELECT "+ ALBUM_TABLE +".*, "+ ARTIST_TABLE +"."+ ARTIST_FULLNAME +" FROM "+ ALBUM_TABLE + " LEFT JOIN "+ ARTIST_TABLE +" ON "+ ALBUM_TABLE +"."+ ALBUM_ARTIST +" = "+ARTIST_TABLE+".id WHERE "+ ALBUM_TABLE +".id = " + id;
-        Cursor mCur = mDb.rawQuery(sql, null);
-        mCur.moveToFirst();
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.default_album);
+     String sql = "SELECT " + ALBUM_TABLE + ".*, " + ARTIST_TABLE + "." + ARTIST_FULLNAME +
+             " FROM " + ALBUM_TABLE +
+             " LEFT JOIN " + ARTIST_TABLE +
+             " ON " + ALBUM_TABLE + "." + ALBUM_ARTIST + " = " + ARTIST_TABLE + ".id "+
+             " WHERE " + ALBUM_TABLE + ".id = " + id;
 
-        Album album = new Album(
-                mCur.getInt(mCur.getColumnIndex(ALBUM_ID)),
-                mCur.getString(mCur.getColumnIndex(ALBUM_NAME)),
-                mCur.getString(mCur.getColumnIndex(ARTIST_FULLNAME)),
-                mCur.getString(mCur.getColumnIndex(ALBUM_DATE)),
-                mCur.getString(mCur.getColumnIndex(ALBUM_SOURCE)),
-                bitmap,
-                mCur.getString(mCur.getColumnIndex(ALBUM_COVER))
-        );
-        mCur.close();
-        return album;
+     Cursor mCur = mDb.rawQuery(sql, null);
+     mCur.moveToFirst();
+     Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.default_album);
+
+     Album album = new Album(
+             mCur.getInt(mCur.getColumnIndex(ALBUM_ID)),
+             mCur.getString(mCur.getColumnIndex(ALBUM_NAME)),
+             mCur.getString(mCur.getColumnIndex(ARTIST_FULLNAME)),
+             mCur.getString(mCur.getColumnIndex(ALBUM_DATE)),
+             mCur.getString(mCur.getColumnIndex(ALBUM_SOURCE)),
+             bitmap,
+             mCur.getString(mCur.getColumnIndex(ALBUM_COVER))
+     );
+     mCur.close();
+     return album;
+
+
     }
 
+    public boolean isAlbumOnLocal(int id){
+        String checkForLocal = "SELECT * FROM " + ALBUM_TABLE +" WHERE id = " + id;
+        if(mDb.rawQuery(checkForLocal, null).getCount() >= 1) {
+            return true;
+        }
+        return false;
+    }
     //Soundtracks
     public ArrayList<Soundtrack> getTrackList(int listid){
         ArrayList<Soundtrack> soundtracks = new ArrayList<>();
@@ -192,11 +206,7 @@ public class DataBaseAdapter
         mCur.moveToFirst();
         while(!mCur.isAfterLast()){
             int currentid = mCur.getInt(mCur.getColumnIndex("id"));
-            Uri image_uri;
-            if(mCur.getString(mCur.getColumnIndex(TRACK_FILE)) != null)
-                image_uri = Uri.parse(mCur.getString(mCur.getColumnIndex(TRACK_FILE)));
-            else
-                image_uri = Uri.EMPTY;
+            String image_uri = mCur.getString(mCur.getColumnIndex(TRACK_FILE));
             ArrayList<String> artists = new ArrayList<>();
             String track_name = mCur.getString(mCur.getColumnIndex(TRACK_NAME));
             String album_name = mCur.getString(mCur.getColumnIndex("albumname"));
@@ -250,11 +260,7 @@ public class DataBaseAdapter
             String track_name = mCur.getString(mCur.getColumnIndex(TRACK_NAME));
             String album_name = mCur.getString(mCur.getColumnIndex("albumname"));
             //Track URI
-            Uri track_uri;
-            if(mCur.getString(mCur.getColumnIndex(TRACK_FILE)) != null)
-                track_uri = Uri.parse(mCur.getString(mCur.getColumnIndex(TRACK_FILE)));
-            else
-                track_uri = Uri.EMPTY;
+            String track_uri = mCur.getString(mCur.getColumnIndex(TRACK_FILE));
             //Is favorited
             boolean isFav = true;
             String sqlfav = "SELECT track.* " +

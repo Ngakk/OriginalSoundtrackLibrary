@@ -13,14 +13,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MainActivityDownloader {
 
     DataBaseAdapter db;
 
@@ -42,48 +44,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         db = new DataBaseAdapter(this);
         db.createDatabase();
-        db.open();
 
-        final ArrayList<Album> newestAlbums = db.getNewestAlbums();
+        new Downloader.AsyncNewest(this).execute();
 
-        GridView group1 = (GridView)findViewById(R.id.group1_content);
-        GridViewAdapter group1adapter = new GridViewAdapter(this, newestAlbums);
-        group1.setAdapter(group1adapter);
-        group1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int albumid = newestAlbums.get(position).getId();
-                AlbumDetail(albumid);
-            }
-        });
+        new Downloader.AsyncBest(this).execute();
 
-        final ArrayList<Album> bestAlbums = db.getBestAlbums();
+        new Downloader.AsyncRandom(this).execute();
 
-        GridView group2 = (GridView)findViewById(R.id.group2_content);
-        GridViewAdapter group2adapter = new GridViewAdapter(this, bestAlbums);
-        group2.setAdapter(group2adapter);
-        group2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int albumid = bestAlbums.get(position).getId();
-                AlbumDetail(albumid);
-            }
-        });
-
-        final ArrayList<Album> randomAlbums = db.getRandomAlbums();
-
-        GridView group3 = (GridView)findViewById(R.id.group3_content);
-        GridViewAdapter group3adapter = new GridViewAdapter(this, randomAlbums);
-        group3.setAdapter(group3adapter);
-        group3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int albumid = randomAlbums.get(position).getId();
-                AlbumDetail(albumid);
-            }
-        });
-
-        db.close();
     }
 
     @Override
@@ -164,4 +131,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         intent.putExtras(bundle);
         startActivity(intent);
     }
+
+    @Override
+    public void onAsyncNewestEnd(ArrayList<Album> albums) {
+        final ArrayList<Album> newest = albums;
+        GridView group1 = (GridView)findViewById(R.id.group1_content);
+        GridViewAdapter group1adapter = new GridViewAdapter(this, newest);
+        group1.setAdapter(group1adapter);
+        group1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int albumid = newest.get(position).getId();
+                AlbumDetail(albumid);
+            }
+        });
+    }
+
+    @Override
+    public void onAsyncBestEnd(ArrayList<Album> albums) {
+        final ArrayList<Album> best = albums;
+        GridView group2 = (GridView)findViewById(R.id.group2_content);
+        GridViewAdapter group2adapter = new GridViewAdapter(this, best);
+        group2.setAdapter(group2adapter);
+        group2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int albumid = best.get(position).getId();
+                AlbumDetail(albumid);
+            }
+        });
+    }
+
+    @Override
+    public void onAsyncRandomEnd(ArrayList<Album> albums) {
+        final ArrayList<Album> random = albums;
+        GridView group3 = (GridView)findViewById(R.id.group3_content);
+        GridViewAdapter group3adapter = new GridViewAdapter(this, random);
+        group3.setAdapter(group3adapter);
+        group3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int albumid = random.get(position).getId();
+                AlbumDetail(albumid);
+            }
+        });
+    }
+
 }
